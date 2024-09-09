@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public class MyArrayList<E> {
+public class MyArrayList<E extends Comparable<E>> {  // Добавили ограничение на Comparable
     private static final int DEFAULT_CAPACITY = 10; // Начальная ёмкость массива
     private Object[] elements; // Массив элементов
     private int size = 0; // Текущее количество элементов в списке
@@ -78,6 +78,43 @@ public class MyArrayList<E> {
         }
     }
 
+    // Метод быстрой сортировки (quicksort)
+    public void quicksort() {
+        quicksort(0, size - 1);
+    }
+
+    // Вспомогательный метод быстрой сортировки с указанием индексов
+    private void quicksort(int low, int high) {
+        if (low < high) {
+            int pivotIndex = partition(low, high);  // Определяем точку опоры (пивот)
+            quicksort(low, pivotIndex - 1);  // Рекурсивный вызов для левой части
+            quicksort(pivotIndex + 1, high);  // Рекурсивный вызов для правой части
+        }
+    }
+
+    // Метод разделения массива на части относительно опорного элемента
+    private int partition(int low, int high) {
+        E pivot = (E) elements[high];  // Опорный элемент
+        int i = low - 1;  // Индекс меньшего элемента
+
+        for (int j = low; j < high; j++) {
+            if (((E) elements[j]).compareTo(pivot) <= 0) {  // Сравнение с пивотом
+                i++;
+                swap(i, j);  // Меняем местами
+            }
+        }
+
+        swap(i + 1, high);  // Меняем местами опорный элемент
+        return i + 1;  // Возвращаем индекс опорного элемента
+    }
+
+    // Метод для обмена элементов в массиве
+    private void swap(int i, int j) {
+        E temp = (E) elements[i];
+        elements[i] = elements[j];
+        elements[j] = temp;
+    }
+
     // Метод преобразования списка в строку
     @Override
     public String toString() {
@@ -99,19 +136,20 @@ public class MyArrayList<E> {
     // Пример использования
     public static void main(String[] args) {
         MyArrayList<Integer> myList = new MyArrayList<>();
-        myList.add(1);
-        myList.add(2);
         myList.add(3);
-        System.out.println(myList); // Вывод: [1, 2, 3]
+        myList.add(1);
+        myList.add(4);
+        myList.add(1);
+        myList.add(5);
+        myList.add(9);
+        myList.add(2);
+        myList.add(6);
+        myList.add(5);
+        System.out.println("Before sorting: " + myList); // Вывод: Before sorting: [3, 1, 4, 1, 5, 9, 2, 6, 5]
 
-        myList.add(1, 5); // Вставка элемента 5 на позицию 1
-        System.out.println(myList); // Вывод: [1, 5, 2, 3]
-
-        myList.remove(2); // Удаление элемента по индексу 2
-        System.out.println(myList); // Вывод: [1, 5, 3]
-
-        System.out.println(myList.get(1)); // Вывод: 5
-        System.out.println("Size: " + myList.size()); // Вывод: Size: 3
+        myList.quicksort();
+        System.out.println("After sorting: " + myList); // Вывод: After sorting: [1, 1, 2, 3, 4, 5, 5, 6, 9]
     }
 }
+
 
